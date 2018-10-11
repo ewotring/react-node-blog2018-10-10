@@ -34,3 +34,21 @@ router.post('/', (req, res, next) => {
     .then(() => res.json({ article: finalArticle.toJSON() }))
     .catch(next);
 });
+
+router.get('/', (req, res, next) => {
+  return Articles.find()
+    .sort({ createdAt: 'descending' })
+    .then((articles) => res.json({ articles: articles.map(article => article.toJSON())}))
+    .catch(next);
+});
+
+router.param('id', (req, res, next) => {
+  return Articles.findById(id, (err, article) => {
+    if(err) {
+      return res.sendStatus(404);
+    } else if(article) {
+      req.article = article;
+      return next();
+    }
+  }).catch(next);
+});
